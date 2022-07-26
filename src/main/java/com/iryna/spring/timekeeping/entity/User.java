@@ -11,6 +11,7 @@ import java.util.List;
 
 /*
     TODO
+            FRONTEND, LOGGING, VALIDATOR, DTO or whatever
           rules: one user may have only one account
              it means username, email and phone number must be unique
              if existed user tries to create new account with the same username/ email /
@@ -18,13 +19,18 @@ import java.util.List;
               "User with such username/email/phone number already exists"
      */
 
+    /*
+    TODO implement roles: ADMIN and simple USER when reach Spring Security
+     */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@EqualsAndHashCode(exclude = {"activities", "activityRequests", "avatar"})
+@EqualsAndHashCode(exclude = {"activities", "activityRequests", "avatar", "password"})
 @ToString(exclude = {"activities", "activityRequests", "password"})
-@Table(name = "users")
+@Entity
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(name = "unique_login_email_phone",
+        columnNames = {"username", "phone", "email"})})
 public class User {
 
     @Id
@@ -39,27 +45,28 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false)
     private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "phone_number", nullable = false, unique = true)
-    private String phoneNumber;
+    @Column(name = "phone", nullable = false)
+    private String phone;
 
+    // TODO think about this field
     @Column(name = "avatar")
     private String avatar;
 
-    // TODO create relations with activities-table
-    //    rules: one user may have many activities and one activity can be run by many
-    //    users at the same time
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "users_activities", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "activity_id"))
     private List<Activity> activities;
 
     // TODO create relations with activities-requests table
     //     rules: one user may have many requests and request may have only one user
-    private List<ActivityRequest> activityRequests;
+    //private List<ActivityRequest> activityRequests;
 }

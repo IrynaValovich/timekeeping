@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * @author iryna
@@ -38,13 +38,13 @@ public class Activity {
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
-    @Column(name = "start_date")
+    @Column(name = "start_time")
     // TODO find the way convert java.time into Timestamp in database and vice versa
-    private LocalDate startDate;
+    private LocalDateTime startTime;
 
-    @Column(name = "end_date")
+    @Column(name = "end_time")
     // TODO find the way convert java.time into Timestamp in database and vice versa
-    private LocalDate endDate;
+    private LocalDateTime endTime;
 
     @Column(name = "duration")
     // TODO find the way make duration field valid for database
@@ -53,7 +53,14 @@ public class Activity {
     // TODO create relations with users-table
     //    rules: one user may have many activities and one activity can be run by many
     //    users at the same time
-    private List<User> users;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "activities",
+                cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<User> users;
+
+    //TODO create relations with request table
+    //    rules: one activity can have many requests but one request can have only one activity
+    // private List<ActivityRequest> activityRequests;
 
 
 }

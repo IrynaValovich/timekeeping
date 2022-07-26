@@ -1,6 +1,6 @@
 package com.iryna.spring.timekeeping.repository;
 
-import com.iryna.spring.timekeepingmanager.entity.Activity;
+import com.iryna.spring.timekeeping.entity.Activity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
